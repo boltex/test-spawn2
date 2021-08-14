@@ -81,6 +81,7 @@ function startServer(context: vscode.ExtensionContext): void {
 	if (_serverProcess) {
 		_serverProcess.on("close", (p_code) => {
 			console.log(`*** SERVER EXITED with code ${p_code}`);
+			serverStarted = false;
 			clearInterval(w_interval);
 		});
 	}
