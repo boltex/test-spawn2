@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as child from 'child_process';
+import * as os from 'os';
 
 let serverStarted: boolean = false;
 let w_interval: NodeJS.Timeout;
@@ -44,7 +45,7 @@ function startServer(context: vscode.ExtensionContext): void {
 	var w_options: child.SpawnOptions = {
 		// Child to run independently of its parent process. Depends on the platform.
 		detached: true,
-
+		windowsHide: true,
 		// Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
 		shell: true
 	};
@@ -52,17 +53,38 @@ function startServer(context: vscode.ExtensionContext): void {
 	// * possible settings
 	// w_options.stdio = ['inherit', 'inherit', 'inherit'];
 	// w_options.stdio = ['inherit', 'pipe', 'pipe'];
-	// w_options.stdio ['pipe', process.stdout, process.stderr];
+	// w_options.stdio = ['pipe', process.stdout, process.stderr];
 
 	// linux
-	var _serverProcess = child.spawn("python3", [context.extensionPath + "/server.py"], w_options); // SPAWN method
+	var launchString = "python3";
+	console.log('os.platform()', os.platform());
+
+	if (os.platform() === "win32") {
+		launchString = "py";
+
+		// w_options.stdio = 'inherit';
+		// w_options.stdio = 'ignore';
+		// * possible settings
+		// w_options.stdio = ['inherit', 'inherit', 'inherit'];
+		// w_options.stdio = [0, 1, "pipe"];
+		// w_options.stdio = ['inherit', 'pipe', 'pipe'];
+		// w_options.stdio = ['pipe', process.stdout, process.stderr];
+
+	}
+
+	var _serverProcess = child.spawn(launchString, [context.extensionPath + "/server.py"], w_options); // SPAWN method
 
 	// To prevent the parent from waiting for a given subprocess to exit
 	_serverProcess.unref();
 
 	// Capture the OUTPUT and send it to the "leo server" OutputChannel
 	if (_serverProcess && _serverProcess.stdout) {
-		console.log('SETTING *ON STDOUT*');
+		console.log('SETTING *ON STDOUT* connected: ', _serverProcess.connected);
+
+
+		if (os.platform() === "win32") {
+			// _serverProcess.stdout.pipe(process.stdout);
+		}
 
 		_serverProcess.stdout.on("data", (p_data) => {
 			p_data.toString().split("\n").forEach((p_line: string) => {
