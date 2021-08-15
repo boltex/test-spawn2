@@ -3,21 +3,15 @@
 import * as vscode from 'vscode';
 import * as child from 'child_process';
 
-
 let serverStarted: boolean = false;
 let w_interval: NodeJS.Timeout;
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Extension "test-spawn2" is now active! Node version: ' + process.version);
+	console.log('process argv' + process.argv);
+	console.log('process cwd' + process.cwd);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('test-spawn2.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
@@ -31,35 +25,45 @@ export function activate(context: vscode.ExtensionContext) {
 			console.log('Already started!');
 		}
 	});
-
 	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate(): Promise<boolean> {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(true);
+		}, 35000); // 35 seconds
+
+	});
+}
 
 function startServer(context: vscode.ExtensionContext): void {
 	w_interval = setInterval(() => { console.log("hi from js each 5s"); }, 5000);
 
-	var w_options = {
+	var w_options: child.SpawnOptions = {
 		// Child to run independently of its parent process. Depends on the platform.
-		// detached: true,
+		detached: true,
 
 		// Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-		// shell: true
+		shell: true
 	};
 
+	// * possible settings
 	// w_options.stdio = ['inherit', 'inherit', 'inherit'];
 	// w_options.stdio = ['inherit', 'pipe', 'pipe'];
 	// w_options.stdio ['pipe', process.stdout, process.stderr];
 
+	// linux
 	var _serverProcess = child.spawn("python3", [context.extensionPath + "/server.py"], w_options); // SPAWN method
 
 	// To prevent the parent from waiting for a given subprocess to exit
-	// _serverProcess.unref();
+	_serverProcess.unref();
 
 	// Capture the OUTPUT and send it to the "leo server" OutputChannel
 	if (_serverProcess && _serverProcess.stdout) {
+		console.log('SETTING *ON STDOUT*');
+
 		_serverProcess.stdout.on("data", (p_data) => {
 			p_data.toString().split("\n").forEach((p_line: string) => {
 				p_line = p_line.trim();
@@ -67,7 +71,7 @@ function startServer(context: vscode.ExtensionContext): void {
 			});
 		});
 	} else {
-		console.error("No stdout");
+		console.error("ERROR: NO STDOUT");
 	}
 	// Capture the ERROR channel and set flags on server errors
 	if (_serverProcess && _serverProcess.stderr) {
