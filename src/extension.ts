@@ -40,7 +40,7 @@ export function deactivate(): Promise<boolean> {
 }
 
 function startServer(context: vscode.ExtensionContext): void {
-	w_interval = setInterval(() => { console.log("hi from js each 5s"); }, 5000);
+	w_interval = setInterval(() => { console.log("hi from js each 5s"); }, 933000);
 
 	var w_options: child.SpawnOptions = {
 		// Child to run independently of its parent process. Depends on the platform.
