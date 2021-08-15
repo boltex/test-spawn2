@@ -3,12 +3,28 @@
 	"displayName": "test-spawn2",
 	"description": "Process Spawning Experiments",
 	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.59.0"
+	"author": {
+		"name": "Félix"
 	},
+	"publisher": "boltex",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/boltex/test-spawn2"
+	},
+	"keywords": [
+		"test",
+		"experiments"
+	],
 	"categories": [
 		"Other"
 	],
+	"engines": {
+		"vscode": "^1.59.0"
+	},
+	"galleryBanner": {
+		"color": "#fffbdc",
+		"theme": "light"
+	},
 	"activationEvents": [
 		"onCommand:test-spawn2.helloWorld"
 	],
