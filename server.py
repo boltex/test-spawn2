@@ -1,6 +1,6 @@
 # Python 3 server example
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import threading, sys
+import time, threading, sys
 
 hostName = "localhost"
 serverPort = 8080
@@ -25,7 +25,7 @@ class MyServer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(bytes("<html><head><title>Will Serve %s times max</title></head>"% self.limit, "utf-8"))
+        self.wfile.write(bytes("<html><head><title>Will Serve %s times max</title></head>" % str(limit), "utf-8"))
         self.wfile.write(bytes("<body>", "utf-8"))
         self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
         self.wfile.write(bytes("<p>Call Count: %s</p>" % str(callCount), "utf-8"))
