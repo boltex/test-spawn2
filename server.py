@@ -22,7 +22,7 @@ class MyServer(BaseHTTPRequestHandler):
             print("favicon")
         else:
             callCount = callCount + 1
-        print("Serving http request # "+  str(callCount), flush=True)
+        print("Serving http request # " + str(callCount), flush=True)
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
